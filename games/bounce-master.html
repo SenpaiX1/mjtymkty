@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover' />
+
+
+  <title>Bouncemasters</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    html {
+      /* fix mobile viewport menu bar on iOS */
+      height: -webkit-fill-available;
+    }
+
+    body {
+      height: 100%;
+      /* fix mobile viewport menu bar on iOS */
+      height: -webkit-fill-available;
+      width: 100%;
+      text-align: center;
+    }
+
+    #unity-container {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Default values, might be overwritten by aspect ratio media queries */
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+    }
+
+
+
+    #unity-loading-container {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 40px;
+
+      opacity: 1;
+      visibility: visible;
+      transition: 800ms linear;
+    }
+
+    #unity-loading-container.finished {
+      opacity: 0;
+      visibility: collapse;
+    }
+
+    #unity-loading-container .logo {
+      width: 15%;
+      height: 15%;
+    }
+
+    #unity-loading-bar {
+      position: relative;
+      width: 40%;
+      height: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    #unity-loading-bar-inner {
+      position: absolute;
+      left: 0%;
+      top: 0%;
+      width: 1%;
+      height: 100%;
+      background-color: #ccc;
+      border-radius: 10px;
+      transition: 400ms linear;
+    }
+
+    #x_unity-loading-bar {
+      position: relative;
+      width: 40%;
+      height: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    #x_unity-loading-bar-inner {
+      position: absolute;
+      left: 0%;
+      top: 0%;
+      width: 1%;
+      height: 100%;
+      background-color: #ccc;
+      border-radius: 10px;
+      transition: 400ms linear;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    (function() {
+      const ua = navigator.userAgent;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+
+      // Условие: если это Safari — НЕ добавляем preload
+      if (!isSafari) {
+        const links = [{
+            href: "Build/Build.data.unityweb",
+            as: "fetch",
+            type: "application/octet-stream",
+            crossorigin: true
+          },
+          {
+            href: "Build/Build.wasm.unityweb",
+            as: "fetch",
+            type: "application/wasm",
+            crossorigin: true
+          }
+        ];
+        links.forEach(d => {
+          const l = document.createElement("link");
+          l.rel = "preload";
+          l.href = d.href;
+          l.as = d.as;
+          if (d.type) l.type = d.type;
+          if (d.crossorigin) l.crossOrigin = "";
+          document.head.appendChild(l);
+        });
+      }
+    })();
+  </script>
+
+
+  <div id="unity-container">
+    <canvas id="unity-canvas"></canvas>
+  </div>
+  <div id="unity-loading-container">
+    <svg width="400" height="80" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#7B68EE;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#E94B8B;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <text x="50%" y="50%" 
+            font-family="Arial, sans-serif" 
+            font-size="42" 
+            font-weight="bold" 
+            text-anchor="middle" 
+            dominant-baseline="middle"
+            fill="url(#textGradient)"
+            letter-spacing="2">
+        Sussybakabois
+      </text>
+    </svg>
+    <div id="unity-loading-bar">
+      <div id="unity-loading-bar-inner"></div>
+    </div>
+  </div>
+
+  <div id="x_ovl" style="width:100%; height:100%;position: absolute; background-color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;">
+    <svg width="400" height="80" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="textGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#7B68EE;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#E94B8B;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <text x="50%" y="50%" 
+            font-family="Arial, sans-serif" 
+            font-size="42" 
+            font-weight="bold" 
+            text-anchor="middle" 
+            dominant-baseline="middle"
+            fill="url(#textGradient2)"
+            letter-spacing="2">
+        Sussybakabois
+      </text>
+    </svg>
+    <div id="x_unity-loading-bar">
+      <div id="x_unity-loading-bar-inner"></div>
+    </div>
+  </div>
+
+  <script>
+    window.GameInterface = new Proxy({
+      sendPreloadProgress: function(progress) {
+        console.log('Loading progress:', progress + '%');
+        return Promise.resolve();
+      },
+      onOffsetChange: function(callback) {
+        console.log('GameInterface.onOffsetChange called');
+        return Promise.resolve();
+      },
+      storage: {
+        getItem: function(key) {
+          return localStorage.getItem(key);
+        },
+        setItem: function(key, value) {
+          localStorage.setItem(key, value);
+        },
+        removeItem: function(key) {
+          localStorage.removeItem(key);
+        },
+        clear: function() {
+          localStorage.clear();
+        }
+      }
+    }, {
+      get: function(target, prop) {
+        if (prop in target) {
+          return target[prop];
+        }
+        return function() {
+          console.log('GameInterface.' + prop + ' called with arguments:', arguments);
+          return Promise.resolve(false);
+        };
+      }
+    });
+
+    (async function() {
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/Build.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/Build.data.unityweb",
+        frameworkUrl: buildUrl + "/Build.framework.js.unityweb",
+        codeUrl: buildUrl + "/Build.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Playgendary",
+        productName: "Bouncemasters",
+        productVersion: "2.4.4",
+      };
+
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        const maxPixelRatioMobile = 2.0;
+        config.devicePixelRatio = Math.min(window.devicePixelRatio, maxPixelRatioMobile);
+      }
+
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingContainer = document.querySelector("#unity-loading-container");
+      var loadingBar = document.querySelector("#unity-loading-bar-inner");
+
+      const url = "Localization.json";
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const str = await response.text();
+          window.LocalizationData = str;
+        }
+      } catch (error) {}
+
+      var unityGame;
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onerror = function() {
+        console.error("Failed to load Unity loader script");
+        alert("Failed to load game loader");
+      };
+      script.onload = function() {
+        console.log("Unity loader script loaded, creating Unity instance...");
+        if (typeof createUnityInstance === 'undefined') {
+          console.error("createUnityInstance is not defined");
+          alert("Unity loader failed to initialize");
+          return;
+        }
+        createUnityInstance(canvas, config, function(progress) {
+          console.log("Loading progress:", progress);
+          loadingBar.style.width = 100 * progress + "%";
+        }).then(function(unityInstance) {
+          console.log("Unity instance created successfully!");
+          unityGame = unityInstance;
+          loadingContainer.classList.add("finished");
+          if (document.getElementById("x_ovl")) {
+            document.getElementById("x_ovl").remove();
+          }
+        }).catch(function(message) {
+          console.error("Unity loading error:", message);
+          alert("Error loading game: " + message);
+        });
+      };
+      document.body.appendChild(script);
+    })();
+
+    var ended = false;
+    var curMaxPerc = 80;
+    requestAnimationFrame(updt);
+    window.onGameStarted = function() {
+      var overlay = document.getElementById("x_ovl");
+      if (overlay) {
+        overlay.remove();
+      }
+      ended = true;
+      window.GameInterface.sendPreloadProgress(100);
+    }
+
+    let prevProgress = -1;
+    let numFramesPercCorrect = 0;
+
+    function updt() {
+      var barInner = document.getElementById("unity-loading-bar-inner");
+      if (!barInner) {
+        ended = true;
+        return;
+      }
+      
+      let perc = Number(barInner.style.width.replace("%", ""));
+      if (perc == 90 && numFramesPercCorrect < 30) {
+        numFramesPercCorrect++;
+        perc = 0;
+      } else if (perc > 0 && perc != 90 && numFramesPercCorrect < 30) {
+        numFramesPercCorrect = 100;
+      }
+      if (perc >= 99.9) {
+        perc = curMaxPerc;
+        curMaxPerc += 0.05;
+        if (curMaxPerc > 98) curMaxPerc = 98;
+      } else perc = perc * 0.8;
+
+      let curProgress = Math.floor(perc);
+      if (!ended && curProgress != prevProgress) {
+        window.GameInterface.sendPreloadProgress(curProgress);
+      }
+      prevProgress = curProgress;
+
+      var xBarInner = document.getElementById("x_unity-loading-bar-inner");
+      if (!ended && xBarInner) {
+        xBarInner.style.width = perc + "%";
+      }
+      if (!ended) requestAnimationFrame(updt);
+    }
+  </script>
+
+</body>
+
+</html>
