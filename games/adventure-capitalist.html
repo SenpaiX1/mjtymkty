@@ -1,7 +1,5 @@
-<!doctype html>
-<html lang="en-us">
- 
-<head>
+<html lang="en-us"><head>
+    <base href="https://rawcdn.githack.com/selenite-cc/selenite-old/9c743188888af0986c8c7b293dbac8f9e421a4ee/adventure-capitalist/">
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | AdVenture Capitalist!</title>
@@ -15,14 +13,14 @@
     <div class="webgl-content">
         <div id="unityContainer" style="width: 960px; height: 600px; padding: 0px; margin: 0px; border: 0px; position: relative; background: rgb(35, 31, 32);">
           
-      <canvas  class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" id="canvas"width=335 height=667 style="width: 100%; height: 100%; background: #231F20"></canvas>
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" width="1357" height="1251" style="background: rgb(35, 31, 32);"></canvas>
       
-    <div id="loadingBox">
-        <div id="bgBar"></div>
-        <div id="progressBar"></div>
-        <p id="loadingInfo">Loading...</p>
+    <div id="loadingBox" style="display: none;">
+        <div id="bgBar" style="display: none;"></div>
+        <div id="progressBar" style="width: 200px; display: none;"></div>
+        <p id="loadingInfo"></p>
     </div>
-    <script type='text/javascript'>
+    <script type="text/javascript">
         // connect to canvas
         var Module = {
             TOTAL_MEMORY: 201326592,
@@ -68,6 +66,13 @@
     </script>
     <script src="Release/UnityConfig.js"></script>
     <script src="Release/fileloader.js"></script>
+          <script>
+if (!console.logError) {
+    console.logError = function () {
+        console.error.apply(console, arguments);
+    };
+}
+</script>
     <script>
         if (!(!Math.fround)) {
             var script = document.createElement('script');
@@ -115,6 +120,6 @@
             codeXHR.send(null);
         }
     </script>
-</body>
+
  
-</html>
+ </div></div><script src="Release/webgl.js"></script></body></html>
